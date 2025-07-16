@@ -21,8 +21,16 @@ def test_add_sweet():
     assert shop.get_all_sweets()[0].name == "Kaju Katli"
 
 
+# DELETING SWEETS
 
-def test_delete_sweet(sample_shop):
-    sample_shop.delete_sweet(1001)
+
+def test_delete_sweet_by_id(sample_shop):
+    sample_shop.delete_sweet_by_id(1001)
     with pytest.raises(SweetNotFoundError):
         sample_shop.get_sweet_by_id(1001)
+
+def test_delete_sweet_by_id(sample_shop):
+    sample_shop.delete_sweet_by_name("Gajar Halwa")
+    with pytest.raises(SweetNotFoundError):
+        sample_shop.get_sweet_by_name("Gajar Halwa")   
+

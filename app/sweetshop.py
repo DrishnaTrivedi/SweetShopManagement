@@ -53,3 +53,13 @@ class SweetShop:
         if max_price is not None:
             results = [s for s in results if s.price <= max_price]
         return results
+    
+
+    # SORT SWEETS
+    def sort_sweets(self, by="name"):
+        if by == "name":
+            return sorted(self.sweets, key=lambda s: s.name)
+        elif by == "price":
+            return sorted(self.sweets, key=lambda s: s.price)
+        else:
+            return self.sweets

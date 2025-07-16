@@ -40,3 +40,16 @@ class SweetShop:
                 return
         raise SweetNotFoundError("Sweet not found.")
     
+
+    #SEARCH SWEETS 
+    def search_sweets(self, name=None, category=None, min_price=None, max_price=None):
+        results = self.sweets
+        if name:
+            results = [s for s in results if name.lower() in s.name.lower()]
+        if category:
+            results = [s for s in results if category.lower() == s.category.lower()]
+        if min_price is not None:
+            results = [s for s in results if s.price >= min_price]
+        if max_price is not None:
+            results = [s for s in results if s.price <= max_price]
+        return results

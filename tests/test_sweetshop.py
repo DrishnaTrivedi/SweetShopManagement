@@ -49,4 +49,15 @@ def test_search_by_price_range(sample_shop):
     results = sample_shop.search_sweets(min_price=20, max_price=50)
     assert len(results) == 2
   
+# SORT SWEETS TEST
+
+def test_sort_by_name(sample_shop):
+    sorted_sweets = sample_shop.sort_sweets(by="name")
+    names = [s.name for s in sorted_sweets]
+    assert names == sorted(names)
+
+def test_sort_by_price(sample_shop):
+    sorted_sweets = sample_shop.sort_sweets(by="price")
+    prices = [s.price for s in sorted_sweets]
+    assert prices == sorted(prices)
 

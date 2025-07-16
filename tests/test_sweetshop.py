@@ -61,3 +61,13 @@ def test_sort_by_price(sample_shop):
     prices = [s.price for s in sorted_sweets]
     assert prices == sorted(prices)
 
+# PURCHASING SWEETS
+
+def test_purchase_sweet(sample_shop):
+    sample_shop.purchase_sweet(1002, 10)
+    assert sample_shop.get_sweet_by_id(1002).quantity == 40
+
+def test_purchase_insufficient_stock(sample_shop):
+    with pytest.raises(OutOfStockError):
+        sample_shop.purchase_sweet(1003, 100)
+    # sweet 1003 had 15 qty only

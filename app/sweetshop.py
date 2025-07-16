@@ -5,7 +5,10 @@ class SweetShop:
         self.sweets = []
 
     def add_sweet(self, sweet):
+        if any(s.sweet_id == sweet.sweet_id for s in self.sweets):
+            raise ValueError(f"Sweet with ID {sweet.sweet_id} already exists.")
         self.sweets.append(sweet)
+
 
     
     def get_all_sweets(self):

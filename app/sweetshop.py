@@ -73,3 +73,8 @@ class SweetShop:
             sweet.quantity -= quantity
         else:
             raise OutOfStockError("Not enough stock.")
+        
+    
+    def restock_sweet(self, sweet_id, quantity):
+        sweet = self.get_sweet_by_id(sweet_id)
+        sweet.quantity += quantity

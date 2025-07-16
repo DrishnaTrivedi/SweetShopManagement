@@ -18,4 +18,9 @@ class SweetShop:
         raise SweetNotFoundError("Sweet not found.")
 
     
-    
+    def delete_sweet(self, sweet_id):
+        for sweet in self.sweets:
+            if sweet.sweet_id == sweet_id:
+                self.sweets.remove(sweet)
+                return
+        raise SweetNotFoundError("Sweet not found.")

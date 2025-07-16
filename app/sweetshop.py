@@ -63,3 +63,13 @@ class SweetShop:
             return sorted(self.sweets, key=lambda s: s.price)
         else:
             return self.sweets
+        
+
+
+    # purchase sweet
+    def purchase_sweet(self, sweet_id, quantity):
+        sweet = self.get_sweet_by_id(sweet_id)
+        if sweet.quantity >= quantity:
+            sweet.quantity -= quantity
+        else:
+            raise OutOfStockError("Not enough stock.")

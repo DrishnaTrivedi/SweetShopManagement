@@ -71,3 +71,10 @@ def test_purchase_insufficient_stock(sample_shop):
     with pytest.raises(OutOfStockError):
         sample_shop.purchase_sweet(1003, 100)
     # sweet 1003 had 15 qty only
+
+
+#restock 
+
+def test_restock_sweet(sample_shop):
+    sample_shop.restock_sweet(1001, 10)
+    assert sample_shop.get_sweet_by_id(1001).quantity == 30

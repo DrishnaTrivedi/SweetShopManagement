@@ -32,5 +32,21 @@ def test_delete_sweet_by_id(sample_shop):
 def test_delete_sweet_by_id(sample_shop):
     sample_shop.delete_sweet_by_name("Gajar Halwa")
     with pytest.raises(SweetNotFoundError):
-        sample_shop.get_sweet_by_name("Gajar Halwa")   
+        sample_shop.get_sweet_by_name("Gajar Halwa") 
+
+
+#SEARCHING SWEETS TESTS
+def test_search_by_name(sample_shop):
+    results = sample_shop.search_sweets(name="Gulab Jamun")
+    assert len(results) == 1
+    assert results[0].name == "Gulab Jamun"
+
+def test_search_by_category(sample_shop):
+    results = sample_shop.search_sweets(category="Milk-Based")
+    assert len(results) == 1
+
+def test_search_by_price_range(sample_shop):
+    results = sample_shop.search_sweets(min_price=20, max_price=50)
+    assert len(results) == 2
+  
 

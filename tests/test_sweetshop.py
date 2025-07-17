@@ -20,6 +20,14 @@ def test_add_sweet():
     assert len(shop.get_all_sweets()) == 1
     assert shop.get_all_sweets()[0].name == "Kaju Katli"
 
+def test_add_sweet_duplicate_raises():
+    shop = SweetShop()
+    sweet = Sweet(1001, "Kaju Katli", "Nut-Based", 50, 20)
+    shop.add_sweet(sweet)
+    with pytest.raises(ValueError):
+        shop.add_sweet(sweet)  # duplicate
+
+
 
 # DELETING SWEETS
 
@@ -60,6 +68,16 @@ def test_sort_by_price(sample_shop):
     sorted_sweets = sample_shop.sort_sweets(by="price")
     prices = [s.price for s in sorted_sweets]
     assert prices == sorted(prices)
+
+def test_sort_sweets_invalid_key_returns_unsorted():
+    sweet1 = Sweet(1001, "Kaju Katli", "Nut-Based", 50, 20)
+    sweet2 = Sweet(1002, "Gulab Jamun", "Milk-Based", 10, 50)
+    sample_shop = SweetShop()   
+    sample_shop.add_sweet(sweet1)
+    sample_shop.add_sweet(sweet2)
+    result = sample_shop.sort_sweets(by="unknown")
+    assert result == [sweet1, sweet2]
+
 
 # PURCHASING SWEETS
 

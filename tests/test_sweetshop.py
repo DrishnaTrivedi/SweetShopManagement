@@ -2,6 +2,8 @@ import pytest
 from app.sweet import Sweet
 from app.sweetshop import SweetShop
 from app.errors import SweetNotFoundError, OutOfStockError
+from app.cart import Cart
+from app.shoppingCart import ShoppingCart
 
 # dummy sweets added to shop
 @pytest.fixture
@@ -29,6 +31,7 @@ def test_add_sweet_duplicate_raises():
 
 
 
+
 # DELETING SWEETS
 
 
@@ -36,6 +39,7 @@ def test_delete_sweet_by_id(sample_shop):
     sample_shop.delete_sweet_by_id(1001)
     with pytest.raises(SweetNotFoundError):
         sample_shop.get_sweet_by_id(1001)
+    assert len(sample_shop.get_all_sweets()) == 2  # One sweet should be deleted
 
 def test_delete_sweet_by_id(sample_shop):
     sample_shop.delete_sweet_by_name("Gajar Halwa")
@@ -96,3 +100,136 @@ def test_purchase_insufficient_stock(sample_shop):
 def test_restock_sweet(sample_shop):
     sample_shop.restock_sweet(1001, 10)
     assert sample_shop.get_sweet_by_id(1001).quantity == 30
+
+
+
+# ----------------------------------
+
+
+ #Update sweets
+def test_update_sweet(sample_shop):
+    sample_shop.update_sweet_by_id(id = 1001, by = "name"  , value = "kaju katli updated")
+    assert sample_shop.get_sweet_by_id(1001).name == "kaju katli updated"
+    with pytest.raises(SweetNotFoundError):
+        sample_shop.update_sweet_by_id(id = 9999, by = "name", value = "non-existent sweet")
+
+def test_low_stock_alert(sample_shop):
+    low_stock_sweets = sample_shop.low_stocks(threshold = 30)
+    assert len(low_stock_sweets) == 2
+    assert low_stock_sweets[0].name == "Kaju Katli"
+    assert low_stock_sweets[1].name == "Gajar Halwa"
+
+#counting total price of the inventory
+def test_total_inventory_value(sample_shop):
+    value = sample_shop.calc_inventory_value()
+    assert value == 1950 # (50*20) + (10*50) + (30*15) = 1000 + 500 + 450 = 1950        
+
+# Edge case: inventory value after clearing shop
+def test_total_inventory_value_after_clearing(sample_shop):
+    sample_shop.clear_shop()
+    value = sample_shop.calc_inventory_value()
+    assert value == 0
+
+# test for clearing the shop
+
+def test_clear_Shop(sample_shop):
+    sample_shop.clear_shop()
+    assert len(sample_shop.get_all_sweets()) == 0
+
+# Edge case: clearing an already empty shop
+def test_clear_empty_shop(sample_shop):
+    sample_shop.clear_shop()
+    sample_shop.clear_shop()  # Should not raise error
+    assert len(sample_shop.get_all_sweets()) == 0
+
+
+def remove_kaju_katli_as_Expired(sample_shop):
+    sample_shop.remove_kaju_katli_as_Expired()
+    assert len(sample_shop.get_all_sweets()) == 2  # Kaju Katli should be removed
+    with pytest.raises(SweetNotFoundError):
+        sample_shop.get_sweet_by_name("Kaju Katli")
+    
+    with pytest.raises(SweetNotFoundError):
+        sample_shop.get_sweet_by_name("Kaju Katli")
+
+
+
+
+def test_cart_add_unique_items():
+    cart = ShoppingCart()
+    cart.add_items(1001, 2)  # Added 2 Kaju Katli
+    cart.add_items(1002, 3)  # Add 3 Gulab Jamun
+
+    assert len(cart.items) == 2
+    assert cart.items[0].sweet_id == 1001
+    assert cart.items[0].quantity == 2
+    assert cart.items[1].sweet_id == 1002
+    assert cart.items[1].quantity == 3
+
+
+def test_add_duplicate_item():
+    #arrange
+    cart = ShoppingCart()
+   
+    cart.add_items(1001, 2) 
+    #act
+    cart.add_items(1001, 1)  # adding kaju katli again
+    #assertion
+    assert cart.items[0].quantity == 3
+
+
+def test_remove_item():
+    #arrange
+    cart = ShoppingCart()
+    cart.add_items(1002, 2)
+    #act
+    cart.remove_items(1002)
+
+    #assert
+    assert len(cart.items) == 0
+    
+
+
+def test_remove_item_not_found():
+    cart = ShoppingCart()
+    with pytest.raises(ValueError):
+        cart.remove_items(9999)  # Non-existent sweet ID
+
+
+def test_process_cart(sample_shop):
+    #arrange
+    cart = ShoppingCart()
+    cart.add_items(1001, 5)
+    cart.add_items(1002, 4)
+    #act
+    # Process the cart
+    sample_shop.process_cart(cart)
+
+    #assert
+    assert sample_shop.get_sweet_by_id(1001).quantity == 15  # 20 - 5
+    assert sample_shop.get_sweet_by_id(1002).quantity == 46  #50 - 4
+
+def test_cart_clear():
+    #arrange
+    cart = ShoppingCart()
+    cart.add_items(1002, 4)
+
+    #act
+    cart.clear()  # Clear the cart after processing
+
+    #assert
+    assert len(cart.items) == 0  # Cart empty
+
+
+def test_reduce_qty(sample_shop):
+     cart = ShoppingCart()
+     cart.add_items(1001, 7)
+     
+
+     cart.reduce_qty(1001)
+
+
+     assert len(cart.items) == 1
+     
+     assert cart.items[0].quantity == 6
+
